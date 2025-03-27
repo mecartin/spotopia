@@ -95,6 +95,12 @@ const SearchTextContainer = styled.div`
   width: 200px;
   padding: 8px;
   box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 5px 5px 0px 0px rgba(0, 0, 0, 0.7);
+  }
 `;
 
 
