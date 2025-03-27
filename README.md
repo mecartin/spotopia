@@ -63,7 +63,7 @@ npm run dev
 2. **Recommendations**: Our algorithm finds songs with similar audio characteristics
 3. **Explore**: Browse through recommendations with album art and metadata
 
-Demo: https://docs.google.com/document/d/1Unt12LOnAleupRQgKVSEqS__AoO_8tYo4l1blSz6_nA/edit?usp=sharing
+Presentation: https://docs.google.com/document/d/1Unt12LOnAleupRQgKVSEqS__AoO_8tYo4l1blSz6_nA/edit?usp=sharing
 
 ## Technical Stack
 
