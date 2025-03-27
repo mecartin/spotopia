@@ -1,0 +1,16 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100%;
+}
+
+#root {
+  height: 100vh;
+  width: 100vw;
+}
+@font-face {
+  font-family: "Retro";   /*Can be any text*/
+  src: local("PressStart2P-Regular"),
+    url("\PressStart2P-Regular.ttf") format("truetype");
+}
