@@ -1,0 +1,28 @@
+Exploratory Data Analysis Report
+================================
+
+1. Dataset Overview
+Total number of songs: 169,909
+Time period: 1921 - 2020
+
+2. Audio Features Summary
+        acousticness   danceability         energy  instrumentalness       liveness    speechiness  tempo_standardized        valence
+count  169909.000000  169909.000000  169909.000000     169909.000000  169909.000000  169909.000000        1.699090e+05  169909.000000
+mean        0.493214       0.538150       0.488593          0.161937       0.206690       0.094058       -6.483620e-16       0.532095
+std         0.376627       0.175346       0.267390          0.309329       0.176796       0.149937        1.000003e+00       0.262408
+min         0.000000       0.000000       0.000000          0.000000       0.000000       0.000000       -2.191034e+00       0.000000
+25%         0.094500       0.417000       0.263000          0.000000       0.098400       0.034900       -7.679535e-01       0.322000
+50%         0.492000       0.548000       0.481000          0.000204       0.135000       0.045000       -7.263374e-02       0.544000
+75%         0.888000       0.667000       0.710000          0.086800       0.263000       0.075400        6.119596e-01       0.749000
+max         0.996000       0.988000       1.000000          1.000000       1.000000       0.969000        4.156220e+00       1.000000
+
+3. Key Findings
+- Average song popularity: 31.56
+- Median artist popularity: 34.62
+- Average duration (minutes): 3.86
+- Most common era: 1960s
+
+4. Visualization Summary
+- Distribution plots have been saved as 'audio_features_distribution.png'
+- Correlation matrix has been saved as 'correlation_matrix.png'
+- Processed data saved by era in 'processed_data' directory

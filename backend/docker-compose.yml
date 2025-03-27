@@ -1,0 +1,39 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/data
+      - ./models:/app/models
+      - ./cleaned_data.csv:/app/cleaned_data.csv
+    depends_on:
+      - redis
+    environment:
+      - SPOTIFY_CLIENT_ID=0b892f6b53dc4b7eb15e75e6596bbf6a
+      - SPOTIFY_CLIENT_SECRET=7c3553cae5cf49498eaeaa21eabb9ead
+      - SPOTIFY_REDIRECT_URI=http://127.0.0.1:8000/callback
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.7'
+          memory: 512M
+
+  redis:
+    image: redis:alpine
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"  # Make Redis accessible to the app
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+volumes:
+  redis-data:

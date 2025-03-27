@@ -1,0 +1,59 @@
+# Python bytecode files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# Environment variables
+.env
+.env.local
+
+# Spotify cache
+.spotifycache
+
+# Data files
+data/
+*.csv
+*.parquet
+
+# Model files (can be large)
+models/*.pkl
+models/*.ann
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Generated visualization files
+*.png
+*.jpg
+*.jpeg
+
+# VS Code settings
+.vscode/
+
+# Redis data
+*.rdb
+
+# Logs
+*.log
+
+# Database files
+*.db
+*.sqlite
+
+# Docker volumes
+docker-volume/
+redis-data/
+
+# OS specific files
+.DS_Store
+Thumbs.db

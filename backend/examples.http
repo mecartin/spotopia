@@ -1,0 +1,73 @@
+# Search endpoint - now includes both Spotify and local results
+GET http://localhost:8000/search?query=shape of you&limit=3
+
+###
+# Example response for search:
+# {
+#   "results": [
+#     {
+#       "id": "7qiZfU4dY1lWllzX7mPBI3",
+#       "name": "Shape of You",
+#       "artists": ["Ed Sheeran"],
+#       "year": 2017,
+#       "popularity": 84,
+#       "preview_url": "https://p.scdn.co/mp3-preview/...",
+#       "external_url": "https://open.spotify.com/track/...",
+#       "source": "spotify"
+#     },
+#     {
+#       "id": 12345,
+#       "name": "Shape of You",
+#       "artists": "Ed Sheeran",
+#       "year": 2017,
+#       "popularity": 84,
+#       "source": "local"
+#     }
+#   ]
+# }
+
+###
+# Recommend endpoint - now accepts song name and optional artist
+POST http://localhost:8000/recommend
+Content-Type: application/json
+
+{
+    "song_name": "Shape of You",
+    "artist_name": "Ed Sheeran",
+    "limit": 5
+}
+
+###
+# Example response for recommend:
+# {
+#   "input_song": {
+#     "id": "7qiZfU4dY1lWllzX7mPBI3",
+#     "name": "Shape of You",
+#     "artists": ["Ed Sheeran"],
+#     "year": 2017,
+#     "popularity": 84,
+#     "preview_url": "https://p.scdn.co/mp3-preview/...",
+#     "external_url": "https://open.spotify.com/track/..."
+#   },
+#   "recommendations": [
+#     {
+#       "id": 12345,
+#       "name": "Similar Song 1",
+#       "artists": "Artist Name",
+#       "year": 2018,
+#       "popularity": 82
+#     },
+#     ...
+#   ]
+# }
+
+###
+# You can also use curl commands:
+
+# For search:
+# curl "http://localhost:8000/search?query=shape%20of%20you&limit=3"
+
+# For recommendations:
+# curl -X POST "http://localhost:8000/recommend" \
+      -H "Content-Type: application/json" \
+      -d '{"song_name": "Shape of You", "artist_name": "Ed Sheeran", "limit": 5}'

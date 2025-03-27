@@ -3,6 +3,8 @@ import { styled, keyframes } from 'styled-components';
 import morphedImage from '/logo.png';
 import { Button, ProgressBar } from 'retro-react';
 import { useNavigate } from 'react-router-dom';
+import { searchSongs } from './lib/api'; // Import the API service
+import ErrorMessage from './components/ErrorMessage';
 
 // Styled Components
 const PageContainer = styled.div`
@@ -136,10 +138,11 @@ const Search = () => {
   const [showInput, setShowInput] = useState(true);
   const [inputValue, setInputValue] = useState('');
   const [hoverDirection, setHoverDirection] = useState(null);
+  const [error, setError] = useState(null);
   const intervalRef = useRef(null);
   const navigate = useNavigate();
 
-  const handleButtonClick = () => {
+  const handleButtonClick = async () => {
     if (!inputValue.trim()) {
       // Shake input if empty
       const input = document.querySelector('input');
@@ -156,6 +159,23 @@ const Search = () => {
       setShowProgressBar(true);
       startProgressBar();
     }, 500);
+
+    try {
+      // Search for the song the user entered
+      const searchResult = await searchSongs(inputValue.trim());
+      
+      // Store the search results in sessionStorage
+      sessionStorage.setItem('searchQuery', inputValue.trim());
+      sessionStorage.setItem('searchResults', JSON.stringify(searchResult));
+      
+    } catch (error) {
+      console.error('Search failed:', error);
+      setError('Search failed. Please try again.');
+      setShowButton(true);
+      setShowInput(true);
+      setShowProgressBar(false);
+      return;
+    }
   };
 
   const startProgressBar = () => {
@@ -205,6 +225,8 @@ const Search = () => {
         />
       )}
 
+      {error && <ErrorMessage message={error} retryRoute="/" buttonText="Try Again" />}
+
       {showButton && (
         <DiscoverButton onClick={handleButtonClick}>Discover</DiscoverButton>
       )}
@@ -221,7 +243,7 @@ const Search = () => {
         </div>
       )}
 
-<AppFooter>© 2025 Spotopia</AppFooter>
+      <AppFooter>© 2025 Spotopia</AppFooter>
     </PageContainer>
   );
 };

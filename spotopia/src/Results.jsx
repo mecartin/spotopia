@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import morphedImage from '/logo.png';
+import { getRecommendations } from './lib/api';
+import ErrorMessage from './components/ErrorMessage';
+import LoadingSpinner from './components/LoadingSpinner';
 
 // Keyframe animations
 const cardSlideIn = keyframes`
@@ -248,18 +251,66 @@ const Logo = styled.img`
 const Results = () => {
   const [showProgressBar, setShowProgressBar] = useState(false);
   const [currentCardSet, setCurrentCardSet] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [recommendations, setRecommendations] = useState([]);
+  const [inputSong, setInputSong] = useState(null);
   const navigate = useNavigate();
 
-  const songs = [
-    { title: 'Cannonball', artist: 'The Breeders', duration: '3:35' },
-    { title: 'Loser', artist: 'Beck', duration: '3:55' },
-    { title: 'Today', artist: 'The Smashing Pumpkins', duration: '3:20' },
-    { title: 'Sabotage', artist: 'Beastie Boys', duration: '2:58' },
-    { title: 'Where Is My Mind?', artist: 'Pixies', duration: '3:40' },
-    { title: 'Bullet with Butterfly Wings', artist: 'The Smashing Pumpkins', duration: '4:17' },
-    { title: 'Blue Monday', artist: 'New Order', duration: '7:30' },
-    { title: 'Under the Bridge', artist: 'Red Hot Chili Peppers', duration: '4:24' },
-  ];
+  // Load data from sessionStorage and fetch recommendations on component mount
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      try {
+        setLoading(true);
+        
+        // Get search query from session storage
+        const query = sessionStorage.getItem('searchQuery');
+        if (!query) {
+          throw new Error('No search query found');
+        }
+        
+        setSearchQuery(query);
+        
+        // Get search results from session storage
+        const searchResultsJson = sessionStorage.getItem('searchResults');
+        if (!searchResultsJson) {
+          throw new Error('No search results found');
+        }
+        
+        const searchResults = JSON.parse(searchResultsJson);
+        
+        // Check if we have any results
+        if (!searchResults.results || searchResults.results.length === 0) {
+          throw new Error('No matching songs found');
+        }
+        
+        // Use the first result to get recommendations
+        const firstResult = searchResults.results[0];
+        const artistName = Array.isArray(firstResult.artists) 
+          ? firstResult.artists[0] 
+          : firstResult.artists;
+        
+        // Get recommendations based on the first search result
+        const recommendationData = await getRecommendations(
+          firstResult.name,
+          artistName,
+          8 // Get 8 recommendations (2 sets of 4)
+        );
+        
+        // Set the input song and recommendations
+        setInputSong(recommendationData.input_song);
+        setRecommendations(recommendationData.recommendations);
+      } catch (err) {
+        console.error('Failed to fetch recommendations:', err);
+        setError(err.message || 'Failed to get recommendations');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchRecommendations();
+  }, []);
 
   const handleDiscoverClick = () => {
     setShowProgressBar(true);
@@ -280,13 +331,57 @@ const Results = () => {
   };
 
   const goToNextSet = () => {
-    setCurrentCardSet((prev) => prev + 1);
+    const maxSets = Math.ceil(recommendations.length / 4) - 1;
+    if (currentCardSet < maxSets) {
+      setCurrentCardSet((prev) => prev + 1);
+    }
   };
 
-  const displayedSongs = songs.slice(
+  // Calculate which songs to display based on current set
+  const displayedSongs = recommendations.slice(
     currentCardSet * 4,
     currentCardSet * 4 + 4
   );
+
+  // Loading state
+  if (loading) {
+    return (
+      <PageContainer>
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100%'
+        }}>
+          <Logo src={morphedImage} alt="Spotopia Logo" />
+          <LoadingSpinner message="Finding your perfect music match..." />
+        </div>
+      </PageContainer>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <PageContainer>
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100%'
+        }}>
+          <Logo src={morphedImage} alt="Spotopia Logo" onClick={handleLogoClick} />
+          <ErrorMessage 
+            message={error} 
+            retryRoute="/search" 
+            buttonText="Try Again" 
+          />
+        </div>
+      </PageContainer>
+    );
+  }
 
   return (
     <PageContainer>
@@ -304,8 +399,8 @@ const Results = () => {
         <SearchContainer>
           <SearchLabel>Similar To</SearchLabel>
           <SearchTextContainer>
-            <span style={{ fontWeight: 'bold' }}>karma police</span>
-            <div>radiohead</div>
+            <span style={{ fontWeight: 'bold' }}>{inputSong?.name || searchQuery}</span>
+            <div>{inputSong?.artists?.join(', ') || ''}</div>
           </SearchTextContainer>
         </SearchContainer>
       </Header>
@@ -324,10 +419,14 @@ const Results = () => {
               <CardImage />
               <SongInfo>
                 <div>
-                  <SongTitleText>{song.title}</SongTitleText>
-                  <ArtistName>{song.artist}</ArtistName>
+                  <SongTitleText>{song.name}</SongTitleText>
+                  <ArtistName>
+                    {Array.isArray(song.artists) 
+                      ? song.artists.join(', ') 
+                      : String(song.artists)}
+                  </ArtistName>
                 </div>
-                <ArtistName>{song.duration}</ArtistName>
+                <ArtistName>{song.year}</ArtistName>
               </SongInfo>
             </Card>
           ))}
@@ -335,7 +434,7 @@ const Results = () => {
 
         <ArrowButton 
           onClick={goToNextSet} 
-          disabled={currentCardSet === 1}
+          disabled={currentCardSet >= Math.ceil(recommendations.length / 4) - 1}
         >
           ▶
         </ArrowButton>

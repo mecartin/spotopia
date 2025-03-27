@@ -1,0 +1,9 @@
+Lightweight Recommendation System Metrics
+======================================
+
+precision@10: 0.3761
+coverage: 0.0569
+
+Model size optimizations:
+- Using only 4 essential features
+- Reduced to 50 trees in AnnoyIndex

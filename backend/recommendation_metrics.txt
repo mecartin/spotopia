@@ -1,0 +1,5 @@
+Recommendation System Metrics
+===========================
+
+precision@10: 0.2507
+coverage: 0.9692
