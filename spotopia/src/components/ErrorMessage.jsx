@@ -35,17 +35,20 @@ const RetryButton = styled(Button)`
   }
 `;
 
-const ErrorMessage = ({ message, retryRoute = '/search', buttonText = 'Try Again' }) => {
+const ErrorMessage = ({ message, retryAction, retryRoute = '/search', buttonText = 'Try Again' }) => {
   const navigate = useNavigate();
-
+  const handleRetry = () => {
+    if (retryAction) {
+      retryAction(); // Call the passed function
+    } else if (retryRoute) {
+      navigate(retryRoute);
+    }
+  };
   return (
     <ErrorContainer>
       <ErrorText>{message}</ErrorText>
-      <RetryButton onClick={() => navigate(retryRoute)}>
-        {buttonText}
-      </RetryButton>
+      <RetryButton onClick={handleRetry}>{buttonText}</RetryButton>
     </ErrorContainer>
   );
 };
-
 export default ErrorMessage;
